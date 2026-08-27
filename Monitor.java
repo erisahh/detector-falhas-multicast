@@ -5,7 +5,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class Monitor {
 
@@ -15,6 +14,8 @@ public class Monitor {
     private static Map<String,Double> contador = new HashMap<>();
     // ip -> maximo dos eventos
     private static Map<String,Double> max = new HashMap<>();
+    // lock para leitura/escrita do contador
+    private static final Object lock = new Object();
 
     public static final int PORT = 8881;
     public static void main(String[] args) {
@@ -53,19 +54,22 @@ public class Monitor {
                     outPacket = new DatagramPacket(outBuf, outBuf.length, address, PORT);
 
                     socket.send(outPacket);
-                    for (Map.Entry<String,Double> keyValue : contador.entrySet()) {
-                        String ip = keyValue.getKey();
-                        double cont = keyValue.getValue();
-                        double maxAtual = cont > max.getOrDefault(ip, 0.0) ? cont : max.get(ip);
-                        maxAtual = Math.max(maxAtual, 1.0);
-                        max.put(ip, maxAtual);
-                        disponibilidade.put(ip, cont/maxAtual);
-                        System.out.println("Disponibilidade: IP=" + ip + ", %=" + disponibilidade.get(ip));
+                    synchronized(lock) {
+                        for (Map.Entry<String,Double> keyValue : contador.entrySet()) {
+                            String ip = keyValue.getKey();
+                            double cont = keyValue.getValue();
+                            double maxAtual = cont > max.getOrDefault(ip, 0.0) ? cont : max.get(ip);
+                            maxAtual = Math.max(maxAtual, 1.0);
+                            max.put(ip, maxAtual);
+                            disponibilidade.put(ip, cont/maxAtual);
+                            System.out.println("IP=" + ip + ", " + disponibilidade.get(ip)*100 + "%");
+                        }
+                        contador.clear();
                     }
 
-                    System.out.println("Server sends : " + msg);
+                    // System.out.println("Server sends : " + msg);
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(50);
                     } catch (InterruptedException ie) {
                     }
                 }
@@ -92,11 +96,13 @@ public class Monitor {
                     inPacket = new DatagramPacket(inBuf, inBuf.length);
                     socket.receive(inPacket);
                     String msg = new String(inBuf, 0, inPacket.getLength());
-                    System.out.println("From " + inPacket.getAddress() + " Msg : " + msg);
+                    // System.out.println("From " + inPacket.getAddress() + " Msg : " + msg);
                     String ip = inPacket.getAddress().getHostAddress();
-                    double contadorAtual = contador.get(ip) == null ? 0 : contador.get(ip);
-                    System.out.println(ip + " " + contadorAtual);
-                    contador.put(ip, contadorAtual+1);
+                    synchronized(lock) {
+                        double contadorAtual = contador.get(ip) == null ? 0 : contador.get(ip);
+                        // System.out.println(ip + " " + contadorAtual);
+                        contador.put(ip, contadorAtual+1);
+                    }
 
                 }
             } catch (IOException ioe) {
