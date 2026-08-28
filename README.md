@@ -12,8 +12,10 @@ O grupo multicast padrão utilizado é 224.0.0.2 e a porta é 8881.
 Funcionamento
 A SenderThread cria e envia periodicamente uma mensagem para o endereço configurado.
 
-No código é demonstrado que uma nova mensagem é enviada a cada 50 milissegundos. Além disso, cada mensagem possui um contador incremental para identificar a sequência dos envios.
+No código é demonstrado que uma nova mensagem é enviada a cada 50 milissegundos. Além disso, cada mensagem possui um contador incremental para identificar a o número dos envios.
 A ReceiverThread permanece associada ao grupo multicast e aguarda o recebimento das mensagens. Quando uma mensagem é recebida, o endereço IP do remetente é identificado e o contador daquele IP é incrementado.
+
+
 Cálculo da disponibilidade
 
 O monitor mantém, para cada endereço IP conhecido, as seguintes informações:
