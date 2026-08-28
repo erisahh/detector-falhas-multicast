@@ -6,11 +6,11 @@ Descrição:
 Implementação de um detector de falhas por omissão utilizando comunicação multicast IP. O monitor possui duas threads responsáveis pelo envio e recebimento periódico de mensagens:
 SenderThread: envia mensagens para um grupo multicast.
 ReceiverThread: recebe mensagens do grupo multicast, identifica o endereço IP do remetente e conta a quantidade de mensagens recebidas.
-Foi utilizado o grupo multicast 224.0.0.2 e a porta 8881.
+O grupo multicast padrão utilizado é 224.0.0.2 e a porta é 8881.
 
 
 Funcionamento
-A SenderThread cria e envia periodicamente uma mensagem UDP para o endereço multicast: 224.0.0.2:8881
+A SenderThread cria e envia periodicamente uma mensagem para o endereço configurado.
 
 No código é demonstrado que uma nova mensagem é enviada a cada 50 milissegundos. Além disso, cada mensagem possui um contador incremental para identificar a sequência dos envios.
 A ReceiverThread permanece associada ao grupo multicast e aguarda o recebimento das mensagens. Quando uma mensagem é recebida, o endereço IP do remetente é identificado e o contador daquele IP é incrementado.
