@@ -51,7 +51,7 @@ public class Monitor {
         }
         Thread sender = new SenderThread(multicastIP, interval, dynamicInterval);
         Thread receiver = new ReceiverThread(multicastIP);
-        Thread monitor = new MonitorThread(DEFAULT_INTERVAL_MS);
+        Thread monitor = new MonitorThread(interval);
         sender.start();
         receiver.start();
         monitor.start();
