@@ -27,7 +27,7 @@ public class Monitor {
     // Interface de rede usada para enviar e receber o multicast.
     // Sender e Receiver PRECISAM usar a mesma, senao o receive() bloqueia para sempre.
     // "en0" (mac wifi/ethernet), "eth0"/"wlan0" (linux).
-    public static final String INTERFACE = "en0";
+    public static final String INTERFACE = "eth0";
 
     public static volatile boolean runThreads = true;
 
